@@ -199,7 +199,10 @@ h1{font-size:clamp(2.8rem,7vw,5.2rem);line-height:1.35;margin-bottom:.35em}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr);row-gap:40px}}
 
 
-footer{padding:36px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.92rem;text-align:center}
+.credits{display:flex;justify-content:center;gap:clamp(28px,7vw,88px);flex-wrap:wrap;margin-bottom:32px}
+.credits small{display:block;color:var(--muted);font-size:.88rem}
+.credits b{font-family:var(--display);font-size:1.4rem;font-weight:700;color:var(--ink);line-height:1.6}
+footer{padding:56px 0 36px;border-top:1px solid var(--line);color:var(--muted);font-size:.92rem;text-align:center}
 
 /* journey dialog */
 dialog{border:0;border-radius:24px;padding:0;background:var(--paper);color:var(--ink);width:min(520px,calc(100vw - 24px));max-height:calc(100vh - 32px);margin:auto;overflow:auto;box-shadow:0 30px 80px -20px rgba(0,0,0,.45)}
@@ -423,7 +426,14 @@ dialog::backdrop{background:rgba(29,47,51,.55);backdrop-filter:blur(3px)}
 </main>
 
 <footer>
-  <div class="wrap"><span id="footName">رحلة قارئة</span>، مبادرة قرائية للطالبات</div>
+  <div class="wrap">
+    <div class="credits">
+      <div><small>المدرسة</small><b id="creditSchool"></b></div>
+      <div><small>إعداد وتنفيذ</small><b id="creditTeam"></b></div>
+      <div><small>مديرة المدرسة</small><b id="creditPrincipal"></b></div>
+    </div>
+    <p><span id="footName">رحلة قارئة</span>، مبادرة قرائية للطالبات</p>
+  </div>
 </footer>
 
 <!-- نافذة رحلتي القرائية -->
@@ -457,7 +467,9 @@ dialog::backdrop{background:rgba(29,47,51,.55);backdrop-filter:blur(3px)}
    ============================================================ */
 const CONFIG = {
   initiative: 'رحلة قارئة',
-  school: '',            // اسم المدرسة (اتركيه فارغًا لإخفائه)
+  school: 'المتوسطة ١١٣',  // اسم المدرسة
+  principal: 'مزنة المولد', // مديرة المدرسة
+  team: 'معلمات اللغة العربية', // القائمات على المبادرة
   goal: 10,              // هدف الكتب لكل طالبة
 
   // الأرقام تبدأ من صفر: غيّري قيمة n لكل بند عند توفر الأرقام الفعلية
@@ -518,6 +530,9 @@ function stageIndex(count) { let i = 0; STAGES.forEach((s, k) => { if (count >= 
 document.title = CONFIG.initiative + ' | مبادرة قرائية للطالبات';
 $('#brandName').textContent = CONFIG.initiative;
 $('#footName').textContent = CONFIG.initiative;
+$('#creditSchool').textContent = CONFIG.school;
+$('#creditTeam').textContent = CONFIG.team;
+$('#creditPrincipal').textContent = CONFIG.principal;
 if (CONFIG.school) $('#heroTag').textContent = 'مبادرة قرائية لطالبات ' + CONFIG.school;
 
 /* ---------- مسار الواجهة ---------- */
