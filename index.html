@@ -160,8 +160,18 @@ h1{font-size:clamp(2.8rem,7vw,5.2rem);line-height:1.35;margin-bottom:.35em}
 .cover h3{font-size:1.55rem;line-height:1.45}
 .cover span{font-size:.88rem;opacity:.85}
 .book p{font-size:.95rem;color:var(--muted);flex:1;margin-bottom:10px}
-.book .btn{align-self:flex-start}
+
 .book .btn[disabled]{opacity:.55;cursor:default}
+.rd{width:min(720px,calc(100vw - 24px))}
+.rd .dlg-head h2{font-size:1.9rem}
+.rd-note{background:var(--mist);color:var(--pine);border-radius:12px;padding:10px 16px;font-size:.92rem;margin:12px 0 22px}
+.rd-text p{font-size:1.15rem;line-height:2.2;margin-bottom:1.1em}
+.rd-text h3{font-size:1.4rem;margin:1.2em 0 .3em}
+.rd-moral{border-right:4px solid var(--honey);padding:6px 16px;background:var(--white);border-radius:8px;margin:8px 0 22px}
+.rd-qs{padding-inline-start:1.4em;color:var(--muted)}
+.rd-qs li{margin-bottom:6px}
+.book-acts{display:flex;flex-wrap:wrap;gap:8px}
+.book-src{display:block;color:var(--muted);font-size:.8rem;line-height:1.7;margin-top:10px}
 .tag-s{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.7);font-size:.75rem;padding:0 10px;border-radius:99px;color:var(--ink)}
 .suggest{margin-top:64px;display:grid;grid-template-columns:1fr 1.3fr;gap:clamp(24px,5vw,60px);align-items:start;border-top:1px solid var(--line);padding-top:48px}
 .suggest h3{font-size:1.8rem}
@@ -238,7 +248,7 @@ dialog::backdrop{background:rgba(29,47,51,.55);backdrop-filter:blur(3px)}
   *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .trail .path-fg{stroke-dashoffset:0}
 }
-#activities,#results{background:var(--white)}
+#results{background:var(--white)}
 </style>
 </head>
 <body>
@@ -253,6 +263,7 @@ dialog::backdrop{background:rgba(29,47,51,.55);backdrop-filter:blur(3px)}
       <a href="#goals">الأهداف</a>
       <a href="#plan">الخطة</a>
       <a href="#challenge">التحدي</a>
+      <a href="#books">الكتب</a>
       <a href="#activities">الأنشطة</a>
       <a href="#results">النتائج</a>
     </nav>
@@ -391,6 +402,14 @@ dialog::backdrop{background:rgba(29,47,51,.55);backdrop-filter:blur(3px)}
 </section>
 
 <!-- الترشيحات -->
+<section id="books">
+  <div class="wrap">
+    <h2>كتب نرشّحها لك</h2>
+    <p class="lead">ثلاثة كتب عربية معروفة تناسب قارئات المرحلة المتوسطة. اقرئي النص المبسّط داخل الصفحة، أو افتحي الأصل من الرابط، وحين تنهين الكتاب أضيفيه إلى قائمتك.</p>
+    <div class="shelf" id="shelf" style="margin-top:40px"></div>
+  </div>
+</section>
+
 <!-- الأنشطة -->
 <section id="activities">
   <div class="wrap">
@@ -458,6 +477,22 @@ dialog::backdrop{background:rgba(29,47,51,.55);backdrop-filter:blur(3px)}
   </div>
 </dialog>
 
+<!-- نافذة القراءة -->
+<dialog id="reader" class="rd" aria-labelledby="rTitle">
+  <div class="dlg">
+    <div class="dlg-head">
+      <h2 id="rTitle"></h2>
+      <button class="x" id="rClose" aria-label="إغلاق">×</button>
+    </div>
+    <p class="rd-note" id="rNote"></p>
+    <div class="rd-text" id="rBody"></div>
+    <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-main btn-sm" id="rDone">أنهيتُه، أضيفيه إلى كتبي</button>
+      <button class="btn btn-soft btn-sm" id="rClose2">إغلاق</button>
+    </div>
+  </div>
+</dialog>
+
 <!-- ملصق الطباعة -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -489,6 +524,66 @@ const CONFIG = {
     { t: 'ركن قراءة دائم', d: 'أصبح للمدرسة ركن يتبادل فيه الطالبات الكتب طوال العام.' }
   ]
 };
+
+
+const NOTE_RETOLD = 'هذه إعادة صياغة مبسّطة بلغة سهلة، وليست النص الأصلي. بعد أن تستمتعي بها، جرّبي قراءة الأصل مع معلمتك.';
+
+const TEXTS = {
+  'كليلة ودمنة': {
+    head: 'باب القرد والغيلم',
+    note: NOTE_RETOLD,
+    paras: [
+      'كان قردٌ ذكيّ يعيش فوق شجرة تين كثيفة الثمار على ضفة نهر، يأكل منها ويرمي ما يزيد عن حاجته.',
+      'وفي يوم جاء إلى جذع الشجرة غيلم، وهو السلحفاة الكبيرة، متعبًا جائعًا. فألقى له القرد حبّات من التين، فأكلها وشكره. وتكرر اللقاء كل يوم، وصارا صديقين يتبادلان الحديث والحكايات.',
+      'وكانت زوجة الغيلم تنتظره في بيتها على الجزيرة، فلاحظت أنه يتأخر كل يوم، فغارت من هذا الصديق. وأرادت أن تُبعده عنها، فادّعت أنها مريضة، وقالت لزوجها: «قال الأطباء إنه لا شفاء لي إلا بقلب قرد».',
+      'حزن الغيلم، فهو يحب زوجته ولا يريد أن يغدر بصديقه. لكنه خاف عليها، فذهب إلى القرد وقال: «يا صديقي، تعال زُر بيتي في الجزيرة، فزوجتي تحب أن تشكرك». فرح القرد وركب على ظهره، وسار بهما الغيلم في النهر.',
+      'وفي وسط الماء ثقُل السرّ على الغيلم، فاعترف: «زوجتي مريضة، ولا دواء لها إلا قلبك».',
+      'ارتعد القرد من الخوف، لكنه لم يفقد عقله، وقال بهدوء: «ولماذا لم تخبرني من البداية يا أخي؟ لو أخبرتني لقدّمت لك قلبي بنفسي! لكننا نحن القرود نترك قلوبنا معلّقة على الشجرة حين نخرج لزيارة الأصدقاء. فهيا نرجع لآتيك به».',
+      'صدّقه الغيلم وعاد به إلى الشاطئ، فقفز القرد إلى أعلى الشجرة وقال: «يا غافل! هل رأيتَ أحدًا يترك قلبه خارج جسده؟ لقد غدرتَ بي فنجوتُ منك بعقلي، ولن أثق بك بعد اليوم». ورجع الغيلم حزينًا، وقد خسر صديقه بعد أن كاد يؤذيه.'
+    ],
+    moral: 'العبرة: من غدر بصديقه خسره، والعقل الهادئ في وقت الخطر أقوى من الخوف.',
+    qs: ['لماذا وافق الغيلم على خداع صديقه؟ وهل ترين أن له عذرًا؟', 'كيف نجا القرد؟ وما الصفة التي ساعدته؟', 'لو كنتِ مكان الغيلم، فماذا كنتِ ستفعلين؟']
+  },
+  'حي بن يقظان': {
+    head: 'قصة حي بن يقظان',
+    note: NOTE_RETOLD,
+    paras: [
+      'في جزيرة بعيدة لا يسكنها أحد، نشأ طفل اسمه «حي بن يقظان». ترعاه ظبية فقدت صغيرها، فأرضعته وحمته، وكبر بين الحيوانات يقلّد أصواتها وحركاتها.',
+      'ومع الأيام لاحظ حيّ أنه يختلف عن الحيوانات، فليس له قرون ولا مخالب ولا فرو. فصنع لنفسه ثيابًا من الأوراق والجلود، وصنع عصا يدافع بها عن نفسه. وهكذا عرف أن عقله يعوّض ما ينقصه.',
+      'ثم ماتت الظبية التي ربّته، فحزن حزنًا شديدًا. وتساءل: ما الذي كان فيها وتركها؟ لماذا توقفت عن الحركة وجسدها ما زال أمامي؟ فبحث وتأمل طويلًا، ليتعلم أن في الأجسام الحية شيئًا خفيًّا لا يُرى بالعين.',
+      'وتعلّم حيّ كيف يستعمل النار، وراقب النباتات والحيوانات والنجوم والشمس والقمر، وصار يسأل: من أين جاء هذا الكون المنظّم؟ وبعد سنوات طويلة من التأمل والملاحظة وحدها، وصل بعقله إلى أن لهذا العالم خالقًا حكيمًا.',
+      'وذات يوم وصل إلى الجزيرة رجل صالح اسمه «أبسال» يحب العزلة والتأمل. تعارف الاثنان، وعلّمه أبسال الكلام، فاكتشف أن ما وصل إليه حيّ بعقله هو نفسه ما جاءت به الشريعة، وإن اختلفت الطريقة.',
+      'سافر حيّ مع أبسال إلى جزيرة قريبة فيها ناس، ليعلّمهم ما عرف. لكنهم لم يفهموا أفكاره العميقة، وانشغلوا بأمور دنياهم. فعاد الاثنان إلى جزيرتهما يتأملان ويعيشان بهدوء، وقد أدرك حيّ أن لكل إنسان طريقته في الفهم.'
+    ],
+    moral: 'العبرة: العقل والملاحظة والتأمل طريق إلى المعرفة، ولكل إنسان طاقته في الفهم.',
+    qs: ['ما الذي جعل حيًّا يتعلم أنه يختلف عن الحيوانات؟', 'كيف وصل حيّ إلى المعرفة وهو وحده في الجزيرة؟', 'لماذا لم يفهم الناس أفكار حيّ في آخر القصة؟']
+  },
+  'رحلة ابن بطوطة': {
+    head: 'من رحلات ابن بطوطة',
+    note: NOTE_RETOLD,
+    paras: [
+      'وُلد محمد بن عبد الله المعروف بابن بطوطة في مدينة طنجة بالمغرب، ونشأ في بيت علم. وفي شبابه، وهو في أوائل العشرينيات من عمره تقريبًا، ترك بلده قاصدًا الحج، وهو لا يعلم أن سفره سيطول ثلاثين عامًا.',
+      'عبر ابن بطوطة شمال إفريقيا ومصر والشام والحجاز، ثم تابع سفره إلى العراق وبلاد فارس واليمن، وإلى شرق إفريقيا وبلاد الأناضول وآسيا الوسطى، ووصل إلى الهند، وعمل هناك قاضيًا، ثم مضى إلى بلاد أبعد حتى وصل إلى الصين.',
+      'في كل بلد كان يلتقي بالعلماء والتجار والسلاطين، ويسجّل ما يرى من الطعام والملابس والأسواق والمدن والعادات، ويصف رحلات البحر ومخاطر الطريق من العواصف واللصوص.',
+      'وبعد عودته إلى المغرب، طلب منه السلطان أن يروي ما رآه، فأملى رحلته على الكاتب ابن جزي سنة ٧٥٦ هـ تقريبًا، وسُمّي الكتاب «تحفة النظار في غرائب الأمصار وعجائب الأسفار».',
+      'ولهذا الكتاب قيمة كبيرة، فهو يخبرنا كيف عاش الناس في القرن الثامن الهجري في أنحاء العالم المعروف آنذاك، ولا يزال الباحثون يعودون إليه في الجغرافيا والتاريخ.'
+    ],
+    moral: 'العبرة: الفضول والسفر والتعلّم من الشعوب يوسّعان العقل ويصنعان المعرفة.',
+    qs: ['لماذا بدأ ابن بطوطة رحلته؟ وإلى أين انتهت؟', 'ما الذي كان يسجّله في كل بلد يصل إليه؟', 'لو سافرتِ مثله، فأي بلد تحبين زيارته أولًا ولماذا؟']
+  }
+};
+
+const BOOKS = [
+  { title: 'كليلة ودمنة', author: 'ابن المقفع', tag: 'حكايات', bg: '#B7AAD0', fg: '#1D2F33',
+    url: 'https://ar.wikisource.org/wiki/%D9%83%D9%84%D9%8A%D9%84%D8%A9_%D9%88%D8%AF%D9%85%D9%86%D8%A9', src: 'تقرئين هنا باب «القرد والغيلم» مبسّطًا، والرابط للنص الأصلي على ويكي مصدر',
+    d: 'حكايات على ألسنة الحيوان تحمل حِكمًا في الصداقة والذكاء والحذر. يُفضّل اختيار نسخة مبسّطة للناشئة.' },
+  { title: 'حي بن يقظان', author: 'ابن طفيل', tag: 'فكر وخيال', bg: '#D9A441', fg: '#1D2F33',
+    url: 'https://ar.wikisource.org/wiki/%D9%85%D8%A4%D9%84%D9%81:%D8%A7%D8%A8%D9%86_%D8%B7%D9%81%D9%8A%D9%84', src: 'تقرئين هنا القصة مبسّطة، والرابط للنص الأصلي على ويكي مصدر (اختاري «حي بن يقظان» من صفحة المؤلف)',
+    d: 'طفل ينشأ وحيدًا في جزيرة، ويصل إلى المعرفة بالتأمل والملاحظة. يُفضّل اختيار نسخة مبسّطة للناشئة.' },
+  { title: 'رحلة ابن بطوطة', author: 'ابن بطوطة', tag: 'رحلات', bg: '#A9C5B8', fg: '#1D2F33',
+    url: 'https://ar.wikisource.org/wiki/%D8%B1%D8%AD%D9%84%D8%A9_%D8%A7%D8%A8%D9%86_%D8%A8%D8%B7%D9%88%D8%B7%D8%A9', src: 'تقرئين هنا نبذة مبسّطة عن الرحلة، والرابط للنص الأصلي على ويكي مصدر',
+    d: 'مغامرات رحّالة جاب العالم المعروف في زمنه، ويصف البلدان والناس والعادات التي رآها.' }
+];
 
 const STAGES = [
   { min: 0,  name: 'على أول الطريق', desc: 'اختاري كتابك الأول' },
@@ -586,8 +681,53 @@ function render() {
   }
 
 
+  renderShelf();
   renderJourney();
 }
+
+function renderShelf() {
+  $('#shelf').innerHTML = BOOKS.map((b, i) => {
+    const has = state.books.some(x => x.title === b.title);
+    return `<article class="book">
+      <div class="cover" style="background:${b.bg};color:${b.fg}">
+        <span class="tag-s">${esc(b.tag)}</span>
+        <h3 style="margin-top:22px">${esc(b.title)}</h3>
+        <span>${esc(b.author)}</span>
+      </div>
+      <p>${esc(b.d)}</p>
+      <div class="book-acts">
+        ${TEXTS[b.title] ? `<button class="btn btn-main btn-sm" data-read="${i}">اقرئيه هنا</button>` : ''}
+        ${b.url ? `<a class="btn ${TEXTS[b.title] ? 'btn-soft' : 'btn-main'} btn-sm" href="${b.url}" target="_blank" rel="noopener">${TEXTS[b.title] ? 'النص الأصلي ↗' : 'اقرئيه على هنداوي ↗'}</a>` : ''}
+        <button class="btn btn-soft btn-sm" data-rec="${i}" ${has ? 'disabled' : ''}>${has ? 'في قائمتك ✓' : 'أنهيتُه، أضيفيه'}</button>
+      </div>
+      <small class="book-src">${esc(b.src)}</small>
+    </article>`;
+  }).join('');
+}
+const rdr = $('#reader');
+let rdrBook = null;
+function openReader(i) {
+  const b = BOOKS[i], t = TEXTS[b.title]; if (!t) return;
+  rdrBook = b;
+  $('#rTitle').textContent = t.head;
+  $('#rNote').textContent = t.note;
+  $('#rBody').innerHTML = t.paras.map(x => `<p>${esc(x)}</p>`).join('')
+    + `<div class="rd-moral">${esc(t.moral)}</div>`
+    + `<h3>أسئلة للتفكير</h3><ol class="rd-qs">${t.qs.map(q => `<li>${esc(q)}</li>`).join('')}</ol>`;
+  const has = state.books.some(x => x.title === b.title);
+  $('#rDone').disabled = has; $('#rDone').textContent = has ? 'في قائمتك ✓' : 'أنهيتُه، أضيفيه إلى كتبي';
+  rdr.showModal(); rdr.scrollTop = 0;
+}
+$('#rClose').addEventListener('click', () => rdr.close());
+$('#rClose2').addEventListener('click', () => rdr.close());
+rdr.addEventListener('click', e => { if (e.target === rdr) rdr.close(); });
+$('#rDone').addEventListener('click', () => { if (rdrBook) addBook({ title: rdrBook.title, author: rdrBook.author }); rdr.close(); });
+$('#shelf').addEventListener('click', e => {
+  const rd = e.target.closest('[data-read]'); if (rd) { openReader(+rd.dataset.read); return; }
+  const btn = e.target.closest('[data-rec]'); if (!btn) return;
+  const b = BOOKS[+btn.dataset.rec];
+  addBook({ title: b.title, author: b.author });
+});
 
 function renderJourney() {
   const n = state.books.length, si = stageIndex(n), nxt = STAGES[si + 1];
